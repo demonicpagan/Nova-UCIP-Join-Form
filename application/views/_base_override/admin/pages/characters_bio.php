@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');?>
+
 <?php echo text_output($header, 'h1', 'page-head');?>
 
 <div id="loading" class="loader">
@@ -10,24 +11,25 @@
 	<?php if ($level == 3 and $inputs['crew_type'] != 'pending'): ?>
 		<p>
 			<kbd><?php echo $label['change'];?></kbd>
-			
+
 			<?php if ($inputs['crew_type'] == 'inactive'): ?>
 				<?php echo form_button($button['activate']);?>
 			<?php endif;?>
-			
+
 			<?php if ($inputs['crew_type'] == 'active'): ?>
 				<?php echo form_button($button['deactivate']);?>
 			<?php endif;?>
-			
+
 			<?php if ($inputs['crew_type'] != 'npc'): ?>
 				<?php echo form_button($button['npc']);?>
 			<?php endif;?>
-			
+
 			<?php if ($inputs['crew_type'] == 'npc'): ?>
 				<?php echo form_button($button['playing']);?>
 			<?php endif;?>
 		</p><br />
 	<?php endif;?>
+
 	<div id="tabs">
 			<ul>
 				<li><a href="#one"><span><?php echo $label['character'];?></span></a></li>
@@ -35,7 +37,7 @@
 				<li><a href="#three"><span><?php echo $label['images'];?></span></a></li>
 			</ul>
 
-	<?php echo form_open('characters/bio/'. $id);?>
+	<?php echo form_open('characters/bio/'.$id);?>
 		<div id="one">
 			<?php echo text_output($label['character'], 'h3', 'page-subhead');?>
 
@@ -64,7 +66,6 @@
 					<kbd><?php echo $label['ucip_dbid'];?></kbd>
 					<?php echo form_input($inputs['ucip_dbid']);?>
 				</p><br />
-
 				<?php if ($level >= 2): ?>
 					<?php if (($level == 2 and $inputs['crew_type'] == 'npc') or $level == 3): ?>
 						<p>
@@ -108,6 +109,7 @@
 						<?php echo text_output($inputs['rank_name'], 'span', 'fontSmall gray');?>
 					</p>
 				<?php endif;?>
+
 				<br /><?php echo form_button($button['submit']);?>
 			</div>
 		</div>
@@ -129,41 +131,41 @@
 					<?php endif; ?>
 				<?php endforeach; ?>
 			<?php endif; ?>
+
 			<br /><?php echo form_button($button['submit']);?>
 		</div>
-		<?php echo form_close();?>
+	<?php echo form_close();?>
 
-		<div id="three">
-	</div>
-			<p><?php echo link_to_if(Auth::check_access('upload/index', false), 'upload/index', img($images['upload']) .' '. $label['upload'], array('class' => 'image fontMedium bold'));?></p>
+	<div id="three">
+		<p><?php echo link_to_if(Auth::check_access('upload/index', false), 'upload/index', img($images['upload']) .' '. $label['upload'], array('class' => 'image fontMedium bold'));?></p>
 
-			<div class="subtabs">
-				<ul>
-					<li><a href="#five"><span><?php echo $label['character_images'];?></span></a></li>
-					<li><a href="#six"><span><?php echo $label['available_images'];?></span></a></li>
-				</ul>
+		<div class="subtabs">
+			<ul>
+				<li><a href="#five"><span><?php echo $label['character_images'];?></span></a></li>
+				<li><a href="#six"><span><?php echo $label['available_images'];?></span></a></li>
+			</ul>
 
-				<div id="five">
-					<p>
-						<?php echo form_button($button['update']);?> &nbsp;&nbsp;
-						<span id="loading_upload_update" class="hidden"><?php echo img($images['loading']);?></span>
-					</p><br />
+			<div id="five">
+				<p>
+					<?php echo form_button($button['update']);?> &nbsp;&nbsp;
+					<span id="loading_upload_update" class="hidden"><?php echo img($images['loading']);?></span>
+				</p><br />
 
-					<ul id="list-grid">
-						<?php if (is_array($inputs['images']) && count($inputs['images']) > 0): ?>
-							<?php foreach ($inputs['images'] as $i): ?>
-								<?php if (strpos($i, '://') === FALSE): ?>
-									<?php $image = array('src' => base_url().Location::asset('images/characters', $i), 'height' => 140);?>
-								<?php else: ?>
-									<?php $image = array('src' => $i, 'height' => 140);?>
-								<?php endif;?>
-								<li id="img_<?php echo str_replace('.', '\\.', $i);?>"><a href="#" class="image upload-close" remove="<?php echo str_replace('.', '\\.', $i);?>">x</a><?php echo img($image);?></li>
-							<?php endforeach;?>
+				<ul id="list-grid">
+				<?php if (is_array($inputs['images']) && count($inputs['images']) > 0): ?>
+					<?php foreach ($inputs['images'] as $i): ?>
+						<?php if (strpos($i, '://') === FALSE): ?>
+							<?php $image = array('src' => base_url().Location::asset('images/characters', $i), 'height' => 140);?>
+						<?php else: ?>
+							<?php $image = array('src' => $i, 'height' => 140);?>
 						<?php endif;?>
-					</ul>
-				</div>
+						<li id="img_<?php echo str_replace('.', '\\.', $i);?>"><a href="#" class="image upload-close" remove="<?php echo str_replace('.', '\\.', $i);?>">x</a><?php echo img($image);?></li>
+					<?php endforeach;?>
+				<?php endif;?>
+				</ul>
+			</div>
 
-				<div id="six">
+			<div id="six">
 				<?php if (isset($myuploads)): ?>
 					<?php echo text_output($label['myuploads'], 'h3');?>
 					<br />
@@ -198,7 +200,7 @@
 						</tbody>
 					</table>
 				<?php endif;?>
-				</div>
 			</div>
 		</div>
+	</div>
 </div>
