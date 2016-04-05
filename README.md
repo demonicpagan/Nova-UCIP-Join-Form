@@ -18,7 +18,7 @@ application you need to perform the following steps.
 
 4. Click "Manage User-Created Settings &raquo;"
 
-5. Click "Add User-Created Setting" (You'll need to do this twice, once for each label/setting key pairing)
+5. Click "Add User-Created Setting" (You'll need to do this thrice, once for each label/setting key pairing)
 
 6. Fill in the Label text box and Setting Key text box.
    Example (the setting key in this example is what is used in main.php):
@@ -28,6 +28,9 @@ application you need to perform the following steps.
 
 	 Label: Academy/Apps From Address
 	 Setting Key: acadapps_from
+
+	 Label: LCARS Wiki Base URL
+	 Setting Key: wiki_url
 
 7. Upload application/controllers/characters.php to your application/controllers folder of your Nova install 
 replacing the existing one if you haven't already modified this file. If you already have changes in this file, 
@@ -78,6 +81,10 @@ You can always get the latest source from <http://github.com/demonicpagan/UCIP-J
 
 Changelog - Dates are in Epoch time
 -----------------------------------
+1459829902:
+
+*	Updated characters.php and personnel.php to work with Nova 2.4.5
+
 1347267158:
 
 *	Removed some unneeded comments from personnel.php
