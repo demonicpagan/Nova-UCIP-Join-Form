@@ -92,78 +92,91 @@ class Characters extends Nova_characters {
 						}
 					}
 
-					// get rid of the submit button
-					unset($array['character']['submit']);
-
-					// get the character record
-					$c = $this->char->get_character($id);
-
-					if (($level == 2 and $c->crew_type == 'npc') or $level == 3)
+					if ($array['character']['first_name'] == "" and $array['character']['last_name'] == "")
 					{
-						$position1_old = $array['character']['position_1_old'];
-						$position2_old = $array['character']['position_2_old'];
-						$rank_old = $array['character']['rank_old'];
+						$message = sprintf(
+							lang('flash_empty_fields'),
+							lang('flash_fields_charactername'),
+							lang('actions_update'),
+							lang('global_character')
+						);
 
-						// get rid of the submit button data and old position refs
-						unset($array['character']['position_1_old']);
-						unset($array['character']['position_2_old']);
-						unset($array['character']['rank_old']);
+						$flash['status'] = 'error';
+						$flash['message'] = text_output($message);
+					}
+					else
+					{
+						// get rid of the submit button
+						unset($array['character']['submit']);
 
-						if ($array['character']['rank'] != $rank_old)
+						// get the character record
+						$c = $this->char->get_character($id);
+
+						if (($level == 2 and $c->crew_type == 'npc') or $level == 3)
 						{
-							$oldR = $this->ranks->get_rank($rank_old, array('rank_order', 'rank_name'));
-							$newR = $this->ranks->get_rank($array['character']['rank'], array('rank_order', 'rank_name'));
+							$position1_old = $array['character']['position_1_old'];
+							$position2_old = $array['character']['position_2_old'];
+							$rank_old = $array['character']['rank_old'];
 
-							$promotion = array(
-								'prom_char' => $data['id'],
-								'prom_user' => $this->char->get_character($data['id'], 'user'),
-								'prom_date' => now(),
-								'prom_old_order' => ($oldR['rank_order'] === null) ? 0 : $oldR['rank_order'],
-								'prom_old_rank' => ($oldR['rank_name'] === null) ? '' : $oldR['rank_name'],
-								'prom_new_order' => ($newR['rank_order'] === null) ? 0 : $newR['rank_order'],
-								'prom_new_rank' => ($newR['rank_name'] === null) ? '' : $newR['rank_name'],
-							);
+							// get rid of the submit button data and old position refs
+							unset($array['character']['position_1_old']);
+							unset($array['character']['position_2_old']);
+							unset($array['character']['rank_old']);
 
-							$prom = $this->char->create_promotion_record($promotion);
-						}
-
-						if ($level == 3)
-						{
-							if ($c->crew_type == 'active')
+							if ($array['character']['rank'] != $rank_old)
 							{
-								// if we've assigned a new position, update the open slots
-								if ($array['character']['position_1'] != $position1_old)
-								{
-									$this->pos->update_open_slots($array['character']['position_1'], 'add_crew');
-									$this->pos->update_open_slots($position1_old, 'remove_crew');
-								}
+								$oldR = $this->ranks->get_rank($rank_old, array('rank_order', 'rank_name'));
+								$newR = $this->ranks->get_rank($array['character']['rank'], array('rank_order', 'rank_name'));
 
-								// if we've assigned a new position, update the open slots
-								if ($array['character']['position_2'] != $position2_old)
+								$promotion = array(
+									'prom_char' => $data['id'],
+									'prom_user' => $this->char->get_character($data['id'], 'user'),
+									'prom_date' => now(),
+									'prom_old_order' => ($oldR['rank_order'] === null) ? 0 : $oldR['rank_order'],
+									'prom_old_rank' => ($oldR['rank_name'] === null) ? '' : $oldR['rank_name'],
+									'prom_new_order' => ($newR['rank_order'] === null) ? 0 : $newR['rank_order'],
+									'prom_new_rank' => ($newR['rank_name'] === null) ? '' : $newR['rank_name'],
+								);
+
+								$prom = $this->char->create_promotion_record($promotion);
+							}
+
+							if ($level == 3)
+							{
+								if ($c->crew_type == 'active')
 								{
-									$this->pos->update_open_slots($array['character']['position_2'], 'add_crew');
-									$this->pos->update_open_slots($position2_old, 'remove_crew');
+									// if we've assigned a new position, update the open slots
+									if ($array['character']['position_1'] != $position1_old)
+									{
+										$this->pos->update_open_slots($array['character']['position_1'], 'add_crew');
+										$this->pos->update_open_slots($position1_old, 'remove_crew');
+									}
+
+									// if we've assigned a new position, update the open slots
+									if ($array['character']['position_2'] != $position2_old)
+									{
+										$this->pos->update_open_slots($array['character']['position_2'], 'add_crew');
+										$this->pos->update_open_slots($position2_old, 'remove_crew');
+									}
 								}
 							}
 						}
+
+						// update the characters table
+						$update = $this->char->update_character($data['id'], $array['character']);
+
+						foreach ($array['fields'] as $k => $v)
+						{
+							$update += $this->char->update_character_data($k, $data['id'], $v);
+						}
+
+						$message = sprintf(
+							($update > 0) ? lang('flash_success') : lang('flash_failure'),
+							ucfirst(lang('global_character')),
+							lang('actions_updated'),
+							''
+						);
 					}
-
-					// update the characters table
-					$update = $this->char->update_character($data['id'], $array['character']);
-
-					foreach ($array['fields'] as $k => $v)
-					{
-						$update += $this->char->update_character_data($k, $data['id'], $v);
-					}
-
-					$message = sprintf(
-						($update > 0) ? lang('flash_success') : lang('flash_failure'),
-						ucfirst(lang('global_character')),
-						lang('actions_updated'),
-						''
-					);
-					$flash['status'] = ($update > 0) ? 'success' : 'error';
-					$flash['message'] = text_output($message);
 				break;
 
 				case 'activate':
@@ -434,8 +447,9 @@ class Characters extends Nova_characters {
 					{
 						$f_id = $field->field_id;
 
-						// set the page label
+						// set the page label and help
 						$data['join'][$sid]['fields'][$f_id]['field_label'] = $field->field_label_page;
+						$data['join'][$sid]['fields'][$f_id]['field_help'] = $field->$field_help;
 
 						$info = $this->char->get_field_data($field->field_id, $data['id']);
 						$row = ($info->num_rows() > 0) ? $info->row() : false;
@@ -674,6 +688,7 @@ class Characters extends Nova_characters {
 			'change' => ucwords(lang('actions_change').' '.lang('global_character').' '.lang('labels_status')),
 			'available_images' => ucwords(lang('labels_available').' '.lang('labels_images')),
 			'character_images' => ucwords(lang('global_character').' '.lang('labels_images')),
+			'back' => LARROW.' '.ucfirst(lang('labels_all').' '.lang('global_characters')),
 		);
 
 		$js_data['rankloc'] = $this->rank;
