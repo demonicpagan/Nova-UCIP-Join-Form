@@ -38,7 +38,7 @@ class Personnel extends Nova_personnel {
 			$data['newscount'] = $this->news->count_character_news($id);
 			$data['awardcount'] = $this->awards->count_character_awards($id);
 
-			$data['last_post'] = mdate($this->options['date_format'], gmt_to_local($character->last_post, $this->timezone, $this->dst));
+			$data['last_post'] = (!empty($charcter->last_post)) ? mdate($this->options['date_format'], gmt_to_local($character->last_post, $this->timezone, $this->dst)) : false;
 
 			// set the name items into an array
 			$name_array = array(
@@ -80,7 +80,7 @@ class Personnel extends Nova_personnel {
 			$data['character']['rank'] = $character->rank;
 			$data['character']['position_1'] = $character->position_1;
 			$data['character']['position_2'] = $character->position_2;
-			$data['character']['user'] = $character->user;
+			$data['character']['user'] = ($character->user !== null or $character->user > 0) ? $character->user : null;
 			$data['character']['ucip_dbid'] = $character->ucip_dbid;
 
 			if ($character->images > '')
